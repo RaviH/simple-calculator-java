@@ -3,6 +3,8 @@ package org.interviews;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
@@ -12,14 +14,54 @@ public class Main {
         main.simpleCalc(input);
     }
 
-    public float simpleCalc(String input) {
+    /**
+     * Since the emphasis is on keeping it simple,
+     * perform some basic validations.
+     *
+     * @param input input string from the user
+     * @return a validation error message or empty.
+     */
+    private Optional<String> validate(List<String> input) {
+        var charToCountMap =
+            input.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
+
+        if (charToCountMap.containsKey("(")) {
+            if (!charToCountMap.get("(").equals(charToCountMap.get(")"))) {
+                return Optional.of("Parenthesis don't match");
+            }
+        }
+        if (isNotNumericOrParens(input.get(0)) || isNotNumericOrParens(input.get(input.size()-1))) {
+            return Optional.of("Input string must start and end with a number");
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Checks if input is a number or parenthesis.
+     *
+     * @param input input param
+     * @return true if it's a number of parenthesis
+     */
+    public static boolean isNotNumericOrParens(String input) {
+        if (input.equals("(") || input.equals(")")) {
+            return false;
+        }
+        try {
+            Float.parseFloat(input);
+        } catch (NumberFormatException nfe) {
+            return true;
+        }
+        return false;
+    }
+
+    public String simpleCalc(String input) {
         var list = new ArrayList<>(
             Arrays.asList(input.replace(" ", "").split(""))
         );
-        return calculate(list);
+        return validate(list).orElseGet(() -> calculate(list));
     }
 
-    private float calculate(List<String> list) {
+    private String calculate(List<String> list) {
         if (list.contains("(")) {
             list = parens(list);
         }
@@ -31,7 +73,7 @@ public class Main {
         if (list.contains("+") || list.contains("-")) {
             list = performAddSub(list);
         }
-        return Float.parseFloat(list.get(0));
+        return list.get(0);
     }
 
     private List<String> performMultiplicationDivision(List<String> list) {
@@ -75,10 +117,7 @@ public class Main {
     private List<String> parens(List<String> list) {
         final int startIndex = list.indexOf("(");
         final int endIndex = list.indexOf(")");
-        final String x = list.get(startIndex + 1);
-        final String operand = list.get(startIndex + 2);
-        final String y = list.get(startIndex + 3);
-        float result = calc(Float.parseFloat(x), Float.parseFloat(y), operand);
+        float result = Float.parseFloat(calculate(list.subList(startIndex + 1, endIndex)));
 
         ArrayList<String> afterOpList = new ArrayList<>();
         int j = 0;
