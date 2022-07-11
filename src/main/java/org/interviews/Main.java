@@ -72,6 +72,9 @@ public class Main {
         if (list.contains("(")) {
             list = parens(list);
         }
+        if (list.contains("^")) {
+            list = performExponent(list);
+        }
 
         if (list.contains("*") || list.contains("/")) {
             list = performMultiplicationDivision(list);
@@ -81,6 +84,38 @@ public class Main {
             list = performAddSub(list);
         }
         return list.get(0);
+    }
+
+    /**
+     * Perform exponent
+     *
+     * @param list input list
+     * @return result list.
+     */
+    private ArrayList<String> performExponent(List<String> list) {
+        var index = list.indexOf("^");
+        var value = Float.valueOf(list.get(index - 1));
+        var multiplyBy = Integer.parseInt(list.get(index + 1));
+        var result = value;
+        for (int i = 1; i < multiplyBy; i++) {
+            result = result * value;
+        }
+        final var resultList = new ArrayList<String>();
+        for (int i = 0; i < list.size();) {
+            if (i == index - 1) {
+                // Add the result instead of source expression to the new list.
+                resultList.add(String.valueOf(result));
+                i += 3;
+            } else {
+                resultList.add(list.get(i++));
+            }
+        }
+
+        if (resultList.contains("^")) {
+            return performExponent(resultList);
+        }
+
+        return resultList;
     }
 
     /**
