@@ -35,7 +35,7 @@ public class MainTest {
 
     @ParameterizedTest(name = "{0}")
     @CsvSource(value = {
-        "7 + 5 * 4 - 2 + 4 / 4 + ( 8 + 5 | Parenthesis don't match"
+        "7 + 5 * 4 - 2 + 4 / 4 + ( 8 + 5 | Parenthesis don't match",
     }, delimiter = '|')
     void testValidation(
         String input,

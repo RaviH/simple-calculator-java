@@ -222,8 +222,7 @@ public class Main {
             case "+" -> x + y;
             case "-" -> x - y;
             case "*" -> x * y;
-            case "/" -> x / y;
-            default -> throw new IllegalArgumentException("Do not know how to deal with: " + operand);
+            default -> x / y;
         };
     }
 }
